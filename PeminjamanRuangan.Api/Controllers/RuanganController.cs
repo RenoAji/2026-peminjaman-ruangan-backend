@@ -29,7 +29,6 @@ public class RuanganController : ControllerBase
                 r.NamaRuangan,
                 r.Lokasi,
                 r.Kapasitas,
-                r.IsAvailable,
                 r.CreatedAt,
                 r.UpdatedAt
             ))
@@ -50,7 +49,6 @@ public class RuanganController : ControllerBase
                 r.NamaRuangan,
                 r.Lokasi,
                 r.Kapasitas,
-                r.IsAvailable,
                 r.CreatedAt,
                 r.UpdatedAt
             ))
@@ -85,11 +83,55 @@ public class RuanganController : ControllerBase
             ruangan.NamaRuangan,
             ruangan.Lokasi,
             ruangan.Kapasitas,
-            ruangan.IsAvailable,
             ruangan.CreatedAt,
             ruangan.UpdatedAt
         );
 
         return CreatedAtAction(nameof(GetById), new { id = ruangan.Id }, response);
+    }
+
+    // PUT /api/ruangan/{id}
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateRuanganRequest request)
+    {
+        var ruangan = await _db.Ruangan.FindAsync(id);
+        if (ruangan is null)
+            return NotFound(new { message = "Ruangan tidak ditemukan" });
+        var exists = await _db.Ruangan.AnyAsync(r => r.NamaRuangan == request.NamaRuangan && r.Id != id);
+        if (exists)
+            return Conflict(new { message = "Nama ruangan sudah digunakan" });
+
+        ruangan.NamaRuangan = request.NamaRuangan ?? ruangan.NamaRuangan;
+        ruangan.Lokasi = request.Lokasi ?? ruangan.Lokasi;
+        ruangan.Kapasitas = request.Kapasitas ?? ruangan.Kapasitas;
+        ruangan.UpdatedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+
+        var response = new RuanganResponse(
+            ruangan.Id,
+            ruangan.NamaRuangan,
+            ruangan.Lokasi,
+            ruangan.Kapasitas,
+            ruangan.CreatedAt,
+            ruangan.UpdatedAt
+        );
+
+        return Ok(response);
+    }
+
+    // DELETE /api/ruangan/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var ruangan = await _db.Ruangan.FindAsync(id);
+        if (ruangan is null)
+            return NotFound(new { message = "Ruangan tidak ditemukan" });
+            
+        _db.Ruangan.Remove(ruangan);
+
+        await _db.SaveChangesAsync();
+        
+        return NoContent();
     }
 }

@@ -6,12 +6,17 @@ public record CreateRuanganRequest(
     int Kapasitas
 );
 
+public record UpdateRuanganRequest(
+    string? NamaRuangan,
+    string? Lokasi,
+    int? Kapasitas
+);
+
 public record RuanganResponse(
     int Id,
     string NamaRuangan,
     string? Lokasi,
     int Kapasitas,
-    bool IsAvailable,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
