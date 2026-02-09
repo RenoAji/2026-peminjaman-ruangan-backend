@@ -26,7 +26,7 @@ public class AppDbContext : DbContext
             entity.HasOne(p => p.Ruangan)
                   .WithMany(r => r.Peminjaman)
                   .HasForeignKey(p => p.RuanganId)
-                  .OnDelete(DeleteBehavior.Restrict);
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
