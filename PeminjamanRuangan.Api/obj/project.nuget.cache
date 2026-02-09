@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "NEIbFQaVEc0=",
+  "success": true,
+  "projectFilePath": "/home/septareno/Code/Matkul/sem_4/intro_pdbl/backend/PeminjamanRuangan.Api/PeminjamanRuangan.Api.csproj",
+  "expectedPackageFiles": [
+    "/home/septareno/.nuget/packages/microsoft.aspnetcore.openapi/10.0.2/microsoft.aspnetcore.openapi.10.0.2.nupkg.sha512",
+    "/home/septareno/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
