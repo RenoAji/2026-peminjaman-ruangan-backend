@@ -2,6 +2,25 @@
 
 Semua perubahan pada proyek ini akan didokumentasikan di file ini.
 
+## [0.3.0] - 2026-02-09
+
+### Added
+
+- CRUD endpoints untuk table `Peminjaman`:
+  - GET `/api/peminjaman` — Retrieve semua peminjaman (sorted by newest, includes ruangan name)
+  - GET `/api/peminjaman/{id}` — Retrieve peminjaman by ID
+  - POST `/api/peminjaman` — Create peminjaman baru dengan validasi ruangan, tanggal, dan time conflict check
+  - PUT `/api/peminjaman/{id}` — Update peminjaman dengan partial update support dan status validation
+  - DELETE `/api/peminjaman/{id}` — Delete peminjaman
+- `PeminjamanController` dengan validasi:
+  - Ruangan existence check
+  - Date validation (tanggal selesai harus setelah tanggal pinjam)
+  - Time conflict detection (mencegah double booking pada ruangan yang sama, mengabaikan status "Rejected")
+  - Status validation (Pending, Approved, Rejected, Done)
+- DTOs: `CreatePeminjamanRequest`, `UpdatePeminjamanRequest`, `PeminjamanResponse`
+- Migration `AddPeminjamanCrud` untuk mengubah column types ke `timestamp without time zone`
+- Insomnia collection (`insomnia_peminjaman.json`) untuk testing API
+
 ## [0.2.0] - 2026-02-09
 
 ### Added
@@ -36,4 +55,3 @@ Semua perubahan pada proyek ini akan didokumentasikan di file ini.
 ### Fixed
 
 - Hapus folder `obj` dari Git tracking
-

@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PeminjamanRuangan.Api.Data;
 
+// Allow DateTime with any Kind to be sent to PostgreSQL (treats Unspecified as UTC)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
