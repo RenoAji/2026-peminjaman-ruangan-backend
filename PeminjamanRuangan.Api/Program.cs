@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PeminjamanRuangan.Api.Data;
+using Scalar.AspNetCore;
 
 // Allow DateTime with any Kind to be sent to PostgreSQL (treats Unspecified as UTC)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -8,7 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Info.Title = "Peminjaman Ruangan API";
+        document.Info.Version = "v1";
+        document.Info.Description = "API untuk manajemen ruangan dan peminjaman.";
+        return Task.CompletedTask;
+    });
+});
+builder.Services.AddEndpointsApiExplorer();
 
 // Configure PostgreSQL Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -27,7 +38,11 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi("/openapi/{documentName}.json");
+    app.MapScalarApiReference(options => 
+    {
+        options.OpenApiRoutePattern = "/openapi/v1.json";
+    });
 }
 
 app.UseHttpsRedirection();
