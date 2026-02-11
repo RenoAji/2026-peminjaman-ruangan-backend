@@ -134,4 +134,77 @@ public class RuanganController : ControllerBase
         
         return NoContent();
     }
+
+    // GET /api/ruangan/{id}/availability?startDate={date}&endDate={date}
+    [HttpGet("{id:int}/availability")]
+    public async Task<IActionResult> GetAvailability(
+        int id,
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate)
+    {
+        // Validate ruangan exists
+        var ruangan = await _db.Ruangan.FindAsync(id);
+        if (ruangan is null)
+            return NotFound(new { message = "Ruangan tidak ditemukan" });
+
+        // Validate query parameters
+        if (!startDate.HasValue || !endDate.HasValue)
+            return BadRequest(new { message = "Parameter startDate dan endDate wajib diisi" });
+
+        if (endDate.Value < startDate.Value)
+            return BadRequest(new { message = "endDate harus >= startDate" });
+
+        // Query booked periods (exclude Rejected status)
+        var bookedPeriods = await _db.Peminjaman
+            .AsNoTracking()
+            .Where(p => p.RuanganId == id
+                && p.Status != "Rejected"
+                && p.TanggalPinjam < endDate.Value
+                && p.TanggalSelesai > startDate.Value)
+            .OrderBy(p => p.TanggalPinjam)
+            .Select(p => new BookedPeriod(
+                p.Id,
+                p.NamaPeminjam,
+                p.TanggalPinjam,
+                p.TanggalSelesai,
+                p.Status
+            ))
+            .ToListAsync();
+
+        // Calculate available periods (gaps between bookings)
+        var availablePeriods = new List<AvailablePeriod>();
+        var currentStart = startDate.Value;
+
+        foreach (var booked in bookedPeriods)
+        {
+            // If there's a gap before this booking
+            if (currentStart < booked.TanggalPinjam)
+            {
+                availablePeriods.Add(new AvailablePeriod(currentStart, booked.TanggalPinjam));
+            }
+            
+            // Move current pointer to end of this booking
+            if (booked.TanggalSelesai > currentStart)
+            {
+                currentStart = booked.TanggalSelesai;
+            }
+        }
+
+        // Add final period if there's time left after last booking
+        if (currentStart < endDate.Value)
+        {
+            availablePeriods.Add(new AvailablePeriod(currentStart, endDate.Value));
+        }
+
+        var response = new RuanganAvailabilityResponse(
+            ruangan.Id,
+            ruangan.NamaRuangan,
+            startDate.Value,
+            endDate.Value,
+            bookedPeriods.ToList(),
+            availablePeriods
+        );
+
+        return Ok(response);
+    }
 }
