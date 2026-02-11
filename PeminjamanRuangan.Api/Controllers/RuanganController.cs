@@ -135,6 +135,39 @@ public class RuanganController : ControllerBase
         return NoContent();
     }
 
+    // GET /api/ruangan/available?startDate={date}&endDate={date}
+    [HttpGet("available")]
+    public async Task<IActionResult> GetAvailableRooms(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate)
+    {
+        if (!startDate.HasValue || !endDate.HasValue)
+            return BadRequest(new { message = "Parameter startDate dan endDate wajib diisi" });
+
+        if (endDate.Value <= startDate.Value)
+            return BadRequest(new { message = "endDate harus > startDate" });
+
+        var availableRooms = await _db.Ruangan
+            .AsNoTracking()
+            .Where(r => !_db.Peminjaman.Any(p =>
+                p.RuanganId == r.Id
+                && p.Status != "Rejected"
+                && p.TanggalPinjam < endDate.Value
+                && p.TanggalSelesai > startDate.Value))
+            .OrderBy(r => r.NamaRuangan)
+            .Select(r => new RuanganResponse(
+                r.Id,
+                r.NamaRuangan,
+                r.Lokasi,
+                r.Kapasitas,
+                r.CreatedAt,
+                r.UpdatedAt
+            ))
+            .ToListAsync();
+
+        return Ok(availableRooms);
+    }
+
     // GET /api/ruangan/{id}/availability?startDate={date}&endDate={date}
     [HttpGet("{id:int}/availability")]
     public async Task<IActionResult> GetAvailability(

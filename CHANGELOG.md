@@ -2,6 +2,20 @@
 
 Semua perubahan pada proyek ini akan didokumentasikan di file ini.
 
+## [0.4.0] - 2026-02-11
+
+### Added
+
+- Endpoint availability ruangan:
+  - GET `/api/ruangan/{id}/availability` — Return booked periods dan available periods dalam range `startDate` dan `endDate`
+- DTOs untuk availability:
+  - `BookedPeriod`, `AvailablePeriod`, `RuanganAvailabilityResponse`
+- Insomnia collection (`insomnia_collection.json`) dengan request availability
+
+### Changed
+
+- Validasi query params `startDate` dan `endDate` untuk availability endpoint
+
 ## [0.3.0] - 2026-02-09
 
 ### Added
