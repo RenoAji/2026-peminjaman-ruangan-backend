@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PeminjamanRuangan.Api.Data;
+using Scalar.AspNetCore;
 
 // Allow DateTime with any Kind to be sent to PostgreSQL (treats Unspecified as UTC)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -19,7 +20,6 @@ builder.Services.AddOpenApi("v1", options =>
     });
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 // Configure PostgreSQL Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -39,11 +39,9 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi("/openapi/{documentName}.json");
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    app.MapScalarApiReference(options => 
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Peminjaman Ruangan API v1");
-        options.RoutePrefix = "swagger";
+        options.OpenApiRoutePattern = "/openapi/v1.json";
     });
 }
 
