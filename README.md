@@ -69,7 +69,7 @@ dotnet run
 
 ### Scalar UI (Interactive)
 
-Akses dokumentasi interaktif di: **`http://localhost:5000`**
+Akses dokumentasi interaktif di: **`http://localhost:5000/scalar/v1`**
 
 Fitur Scalar UI:
 
