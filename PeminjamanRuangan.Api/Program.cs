@@ -2,6 +2,22 @@ using Microsoft.EntityFrameworkCore;
 using PeminjamanRuangan.Api.Data;
 using Scalar.AspNetCore;
 
+// Load .env file from parent directory
+var envFile = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
+if (File.Exists(envFile))
+{
+    var lines = File.ReadAllLines(envFile);
+    foreach (var line in lines)
+    {
+        if (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#"))
+        {
+            var parts = line.Split('=', 2);
+            if (parts.Length == 2)
+                Environment.SetEnvironmentVariable(parts[0].Trim(), parts[1].Trim());
+        }
+    }
+}
+
 // Allow DateTime with any Kind to be sent to PostgreSQL (treats Unspecified as UTC)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
