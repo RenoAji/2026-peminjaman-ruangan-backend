@@ -109,7 +109,7 @@ OpenAPI spec tersedia di: **`http://localhost:5000/openapi/v1.json`**
 
 1. Jalankan dari folder `PeminjamanRuangan.Api`: `dotnet watch run`
 2. Edit file `.cs`, simpan → aplikasi auto-restart
-3. Test di Scalar UI: `http://localhost:5000`
+3. Test di Scalar UI: `http://localhost:5000/scalar/v1`
 4. Commit changes
 
 **Note:** Jangan commit file `.env` (sudah di `.gitignore`). Hanya commit `.env.example`.
